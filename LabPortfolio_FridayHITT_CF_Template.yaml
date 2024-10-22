@@ -1,11 +1,69 @@
 Description: Template to create an EC2 instance
 
 Resources:
-  # Defining the EC2 instance
-  FridayHITTPrivateEC2Instance: #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
+  FridayHITTVPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  # Internet Gateway for Public Subnet
+  FridayHITTInternetGateway:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: FridayHITTInternetGateway
+
+  FridayHITTAttachGateway:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref FridayHITTVPC
+      InternetGatewayId: !Ref FridayHITTInternetGateway
+
+  # Public Subnet
+  FridayHITTPublicSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref FridayHITTVPC
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name #Enter your Key Name
+          Value: PublicSubnet
+
+  # Private Subnet
+  FridayHITTPrivateSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref FridayHITTVPC
+      CidrBlock: 10.0.2.0/24
+      AvailabilityZone: !Select
+        - 0
+        - !GetAZs ''
+      Tags:
+        - Key: Name
+          Value: PrivateSubnet
+
+  # Defining the Public EC2 instance, Yet to add it under Public Subnet
+  FridayHITTPublicEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro  # Choose the instance type (e.g., t2.micro)
-      KeyName: StormHawker_FridayHITT  # Replace with your EC2 key pair name
-      ImageId: ami-00385a401487aefa4  # Replace with a valid AMI ID for your region
+      InstanceType: t2.micro
+      KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
+      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
+      Region: eu-west-1
+
+  # Defining the Private EC2 instance, Yet to add it under Private Subnet
+  FridayHITTPrivateEC2Instance:
+    #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
+      KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
+      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       Region: eu-west-1
