@@ -115,3 +115,58 @@ FridayHITTJumpBoxEC2InstanceSecurityGroup:
         FromPort: 22
         ToPort: 22 #SSH
         CidrIp: 0.0.0.0/0  # anywhere from IPv4
+
+
+#Creating Public Route Table
+FridayHITTPublicRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+    VpcId: !Ref FridayHITTVPC
+    Tags:
+      - Key: Name
+        Value: FridayHITTPublicRouteTable
+
+#Creating Public Route - Attaching RouteTable to Interent Gateway
+FridayHITTPublicRoute:
+  Type: AWS::EC2::Route
+  DependsOn: FridayHITTAttachGateway
+  Properties:
+    RouteTableId: !Ref FridayHITTPublicRouteTable
+    DestinationCidrBlock: 0.0.0.0/0
+    GatewayId: !Ref FridayHITTInternetGateway
+    Tags:
+      - Key: Name
+        Value: FridayHITTPublicRoute
+
+#Creating Public Subnet Route Table Association - Associating Public Route Table To Public Subnet
+FridayHITTPublicSubnetRouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId: !Ref FridayHITTPublicSubnet
+    RouteTableId: !Ref FridayHITTPublicRouteTable
+  
+#Creating Private Route Table
+FridayHITTPrivateRouteTable:
+  Type: AWS::EC2::RouteTable
+  Properties:
+    VpcId: !Ref FridayHITTVPC
+    Tags:
+      - Key: Name
+        Value: FridayHITTPrivateRouteTable
+
+FridayHITTPrivateRoute:
+  Type: AWS::EC2::Route
+  DependsOn: FridayHITTAttachGateway
+  Properties:
+    RouteTableId: !Ref FridayHITTPrivateRouteTable
+    DestinationCidrBlock: 10.0.0.0/16 #Provied VPC CIDR Block
+    GatewayId: local #It wont be communicating with Internet Or Outside World - Hence Value is local
+    Tags:
+      - Key: Name
+        Value: FridayHITTPrivateRoute
+      
+FridayHITTPrivateSubnetRouteTableAssociation:
+  Type: AWS::EC2::SubnetRouteTableAssociation
+  Properties:
+    SubnetId: !Ref FridayHITTPrivateSubnet
+    RouteTableId: !Ref FridayHITTPrivateRouteTable
