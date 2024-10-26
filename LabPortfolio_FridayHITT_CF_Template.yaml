@@ -73,100 +73,102 @@ Resources:
       SubnetId: !Ref FridayHITTPublicSubnet
 
 # Security Group for Public EC2 Instance
-FridayHITTPublicEC2InstanceSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription: Public instance security group allowing External communication
-    VpcId: !Ref FridayHITTVPC
-    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22 #SSH
-        SourceSecurityGroupID: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
-      - IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80 #HHTP
-        CidrIp: 0.0.0.0/0  # anywhere from IPv4
-      - IpProtocol: tcp
-        FromPort: 443
-        ToPort: 443 #HHTPS
-        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+  FridayHITTPublicEC2InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Public instance security group allowing External communication
+      VpcId: !Ref FridayHITTVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22 #SSH
+          SourceSecurityGroupId: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80 #HHTP
+          CidrIp: 0.0.0.0/0  # anywhere from IPv4
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443 #HHTPS
+          CidrIp: 0.0.0.0/0  # anywhere from IPv4
   
 # Security Group for Private EC2 Instance
-FridayHITTPrivateEC2InstanceSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription: Private instance security group allowing Internal communication
-    VpcId: !Ref FridayHITTVPC
-    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22 #SSH
-        SourceSecurityGroupID: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
+  FridayHITTPrivateEC2InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Private instance security group allowing Internal communication
+      VpcId: !Ref FridayHITTVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22 #SSH
+          SourceSecurityGroupID: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
       
 # Security Group for Jump Box EC2 Instance
-FridayHITTJumpBoxEC2InstanceSecurityGroup:
-  Type: AWS::EC2::SecurityGroup
-  Properties:
-    GroupDescription: Jump Box instance security group allowing SSH communication for Public & Private
-    VpcId: !Ref FridayHITTVPC
-    SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: 22
-        ToPort: 22 #SSH
-        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+  FridayHITTJumpBoxEC2InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Jump Box instance security group allowing SSH communication for Public & Private
+      VpcId: !Ref FridayHITTVPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22 #SSH
+          CidrIp: 0.0.0.0/0  # anywhere from IPv4
 
 
 #Creating Public Route Table
-FridayHITTPublicRouteTable:
-  Type: AWS::EC2::RouteTable
-  Properties:
-    VpcId: !Ref FridayHITTVPC
-    Tags:
-      - Key: Name
-        Value: FridayHITTPublicRouteTable
+  FridayHITTPublicRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTVPC
+      Tags:
+        - Key: Name
+          Value: FridayHITTPublicRouteTable
 
 #Creating Public Route - Attaching RouteTable to Interent Gateway
-FridayHITTPublicRoute:
-  Type: AWS::EC2::Route
-  DependsOn: FridayHITTAttachGateway
-  Properties:
-    RouteTableId: !Ref FridayHITTPublicRouteTable
-    DestinationCidrBlock: 0.0.0.0/0
-    GatewayId: !Ref FridayHITTInternetGateway
-    Tags:
-      - Key: Name
-        Value: FridayHITTPublicRoute
+  FridayHITTPublicRoute:
+    Type: AWS::EC2::Route
+    DependsOn: FridayHITTAttachGateway
+    Properties:
+      RouteTableId: !Ref FridayHITTPublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref FridayHITTInternetGateway
+      Tags:
+        - Key: Name
+          Value: FridayHITTPublicRoute
 
 #Creating Public Subnet Route Table Association - Associating Public Route Table To Public Subnet
-FridayHITTPublicSubnetRouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    SubnetId: !Ref FridayHITTPublicSubnet
-    RouteTableId: !Ref FridayHITTPublicRouteTable
+  FridayHITTPublicSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref FridayHITTPublicSubnet
+      RouteTableId: !Ref FridayHITTPublicRouteTable
   
 #Creating Private Route Table
-FridayHITTPrivateRouteTable:
-  Type: AWS::EC2::RouteTable
-  Properties:
-    VpcId: !Ref FridayHITTVPC
-    Tags:
-      - Key: Name
-        Value: FridayHITTPrivateRouteTable
+  FridayHITTPrivateRouteTable:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref FridayHITTVPC
+      Tags:
+        - Key: Name
+          Value: FridayHITTPrivateRouteTable
 
-FridayHITTPrivateRoute:
-  Type: AWS::EC2::Route
-  DependsOn: FridayHITTAttachGateway
-  Properties:
-    RouteTableId: !Ref FridayHITTPrivateRouteTable
-    DestinationCidrBlock: 10.0.0.0/16 #Provied VPC CIDR Block
-    GatewayId: local #It wont be communicating with Internet Or Outside World - Hence Value is local
-    Tags:
-      - Key: Name
-        Value: FridayHITTPrivateRoute
+#Creating Private Route - Attaching RouteTable to Local
+  FridayHITTPrivateRoute:
+    Type: AWS::EC2::Route
+    DependsOn: FridayHITTAttachGateway
+    Properties:
+      RouteTableId: !Ref FridayHITTPrivateRouteTable
+      DestinationCidrBlock: 10.0.0.0/16 #Provied VPC CIDR Block
+      GatewayId: local #It wont be communicating with Internet Or Outside World - Hence Value is local
+      Tags:
+        - Key: Name
+          Value: FridayHITTPrivateRoute
       
-FridayHITTPrivateSubnetRouteTableAssociation:
-  Type: AWS::EC2::SubnetRouteTableAssociation
-  Properties:
-    SubnetId: !Ref FridayHITTPrivateSubnet
-    RouteTableId: !Ref FridayHITTPrivateRouteTable
+#Creating Private Subnet Route Table Association - Associating Private Route Table To Private Subnet
+  FridayHITTPrivateSubnetRouteTableAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      SubnetId: !Ref FridayHITTPrivateSubnet
+      RouteTableId: !Ref FridayHITTPrivateRouteTable
