@@ -4,7 +4,7 @@ Resources:
   FridayHITTVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16
+      CidrBlock: 10.0.0.0/16 #Need to change this IP Address
       EnableDnsSupport: true
       EnableDnsHostnames: true
 
@@ -13,7 +13,7 @@ Resources:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
-        - Key: Name
+        - Key: Name #This can be DEV,QA, WEB etc
           Value: FridayHITTInternetGateway
 
   FridayHITTAttachGateway:
@@ -27,10 +27,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref FridayHITTVPC
-      CidrBlock: 10.0.1.0/24
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs ''
+      CidrBlock: 10.0.1.0/24 #Need to change this IP Address
+      AvailabilityZone: !Select [0, !GetAZs '']
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name #Enter your Key Name
@@ -41,10 +39,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref FridayHITTVPC
-      CidrBlock: 10.0.2.0/24
-      AvailabilityZone: !Select
-        - 0
-        - !GetAZs ''
+      CidrBlock: 10.0.2.0/24 #Need to change this IP Address
+      AvailabilityZone: !Select [0, !GetAZs '']
       Tags:
         - Key: Name
           Value: PrivateSubnet
@@ -56,7 +52,7 @@ Resources:
       InstanceType: t2.micro
       KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
-      Region: eu-west-1
+      SubnetId: !Ref FridayHITTPublicSubnet
 
   # Defining the Private EC2 instance, Yet to add it under Private Subnet
   FridayHITTPrivateEC2Instance:
@@ -66,4 +62,45 @@ Resources:
       InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
-      Region: eu-west-1
+      SubnetId: !Ref FridayHITTPrivateSubnet
+
+# Security Group for Public EC2 Instance
+FridayHITTPublicEC2InstanceSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Public instance security group allowing External communication
+    VpcId: !Ref FridayHITTVPC
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+  
+# Security Group for Private EC2 Instance
+FridayHITTPrivateEC2InstanceSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Private instance security group allowing Internal communication
+    VpcId: !Ref FridayHITTVPC
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0  # anywhere from IPv4 - Yet to be associated with Jumbox
+
+
+
+
+
+
+
+
+
