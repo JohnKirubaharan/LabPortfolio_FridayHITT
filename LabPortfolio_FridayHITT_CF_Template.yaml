@@ -53,7 +53,8 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
-      SecurityGroupIds: FridayHITTPublicEC2InstanceSecurityGroup
+      SecurityGroupIds: 
+        - !Ref FridayHITTPublicEC2InstanceSecurityGroup
       Tags:
         - Key: Name
           Value: FridayHITTPublicEC2Instance
@@ -66,7 +67,8 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPrivateSubnet
-      SecurityGroupIds: FridayHITTPrivateEC2InstanceSecurityGroup
+      SecurityGroupIds: 
+        - !Ref FridayHITTPrivateEC2InstanceSecurityGroup
       Tags:
         - Key: Name
           Value: FridayHITTPrivateEC2Instance
@@ -79,7 +81,8 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
-      SecurityGroupIds: FridayHITTJumpBoxEC2InstanceSecurityGroup
+      SecurityGroupIds: 
+        - !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
       Tags:
         - Key: Name
           Value: FridayHITTJumpBoxEC2Instance
