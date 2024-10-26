@@ -134,9 +134,6 @@ Resources:
       RouteTableId: !Ref FridayHITTPublicRouteTable
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref FridayHITTInternetGateway
-      Tags:
-        - Key: Name
-          Value: FridayHITTPublicRoute
 
 #Creating Public Subnet Route Table Association - Associating Public Route Table To Public Subnet
   FridayHITTPublicSubnetRouteTableAssociation:
@@ -154,18 +151,6 @@ Resources:
         - Key: Name
           Value: FridayHITTPrivateRouteTable
 
-#Creating Private Route - Attaching RouteTable to Local
-  FridayHITTPrivateRoute:
-    Type: AWS::EC2::Route
-    DependsOn: FridayHITTAttachGateway
-    Properties:
-      RouteTableId: !Ref FridayHITTPrivateRouteTable
-      DestinationCidrBlock: 10.0.0.0/16 #Provied VPC CIDR Block
-      GatewayId: local #It wont be communicating with Internet Or Outside World - Hence Value is local
-      Tags:
-        - Key: Name
-          Value: FridayHITTPrivateRoute
-      
 #Creating Private Subnet Route Table Association - Associating Private Route Table To Private Subnet
   FridayHITTPrivateSubnetRouteTableAssociation:
     Type: AWS::EC2::SubnetRouteTableAssociation
