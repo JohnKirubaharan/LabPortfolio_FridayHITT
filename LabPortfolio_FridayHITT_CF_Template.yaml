@@ -53,6 +53,9 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
+      Tags:
+        - Key: Name
+          Value: FridayHITTPublicEC2Instance
 
   # Defining the Private EC2 instance
   FridayHITTPrivateEC2Instance: #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
@@ -62,6 +65,9 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPrivateSubnet
+      Tags:
+        - Key: Name
+          Value: FridayHITTPrivateEC2Instance
 
   # Defining the Jump Box EC2 instance
   FridayHITTJumpBoxEC2Instance:    #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
@@ -71,6 +77,9 @@ Resources:
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
+      Tags:
+        - Key: Name
+          Value: FridayHITTJumpBoxEC2Instance
 
 # Security Group for Public EC2 Instance
   FridayHITTPublicEC2InstanceSecurityGroup:
