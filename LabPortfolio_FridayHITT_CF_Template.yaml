@@ -45,7 +45,7 @@ Resources:
         - Key: Name
           Value: PrivateSubnet
 
-  # Defining the Public EC2 instance, Yet to add it under Public Subnet
+  # Defining the Public EC2 instance
   FridayHITTPublicEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
@@ -54,15 +54,23 @@ Resources:
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
 
-  # Defining the Private EC2 instance, Yet to add it under Private Subnet
-  FridayHITTPrivateEC2Instance:
-    #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
+  # Defining the Private EC2 instance
+  FridayHITTPrivateEC2Instance: #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPrivateSubnet
+
+  # Defining the Jump Box EC2 instance
+  FridayHITTJumpBoxEC2Instance:    #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
+      KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
+      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
+      SubnetId: !Ref FridayHITTPublicSubnet
 
 # Security Group for Public EC2 Instance
 FridayHITTPublicEC2InstanceSecurityGroup:
@@ -73,15 +81,15 @@ FridayHITTPublicEC2InstanceSecurityGroup:
     SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 22
-        ToPort: 22
-        CidrIp: 0.0.0.0/0  # anywhere from IPv4
+        ToPort: 22 #SSH
+        SourceSecurityGroupID: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
       - IpProtocol: tcp
         FromPort: 80
-        ToPort: 80
+        ToPort: 80 #HHTP
         CidrIp: 0.0.0.0/0  # anywhere from IPv4
       - IpProtocol: tcp
         FromPort: 443
-        ToPort: 443
+        ToPort: 443 #HHTPS
         CidrIp: 0.0.0.0/0  # anywhere from IPv4
   
 # Security Group for Private EC2 Instance
@@ -93,14 +101,17 @@ FridayHITTPrivateEC2InstanceSecurityGroup:
     SecurityGroupIngress:
       - IpProtocol: tcp
         FromPort: 22
-        ToPort: 22
-        CidrIp: 0.0.0.0/0  # anywhere from IPv4 - Yet to be associated with Jumbox
-
-
-
-
-
-
-
-
-
+        ToPort: 22 #SSH
+        SourceSecurityGroupID: !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
+      
+# Security Group for Jump Box EC2 Instance
+FridayHITTJumpBoxEC2InstanceSecurityGroup:
+  Type: AWS::EC2::SecurityGroup
+  Properties:
+    GroupDescription: Jump Box instance security group allowing SSH communication for Public & Private
+    VpcId: !Ref FridayHITTVPC
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22 #SSH
+        CidrIp: 0.0.0.0/0  # anywhere from IPv4
