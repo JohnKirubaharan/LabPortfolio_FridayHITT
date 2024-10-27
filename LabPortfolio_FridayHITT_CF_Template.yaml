@@ -30,7 +30,23 @@ Parameters:
       - t3.micro
       - t3.small
       - t3.medium
-
+  KeyName:
+    Description: Name of an existing EC2 KeyPair for SSH access
+    Type: AWS::EC2::KeyPair::KeyName
+    ConstraintDescription: Must be the name of an existing EC2 KeyPair.
+    
+Mappings:
+  RegionMap:
+    eu-west-1:
+      AMI: ami-00385a401487aefa4
+    eu-west-2:
+      AMI: ami-0acc77abdfc7ed5a6
+    eu-west-3:
+      AMI: ami-00d81861317c2cc1f
+    eu-central-1:
+      AMI: ami-08ec94f928cf25a9d
+    eu-north-1:
+      AMI: ami-02db68a01488594c5
 ##########################################################################################################################
 Resources:
   FridayHITTVPC:
@@ -82,8 +98,8 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType #t2.micro - Example Value
-      KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
-      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
+      KeyName: !Ref KeyName # Replace with your actual key pair name
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', AMI] #ami-00385a401487aefa4 - Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
       SecurityGroupIds: 
         - !Ref FridayHITTPublicEC2InstanceSecurityGroup
@@ -96,8 +112,8 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType #t2.micro Choose the instance type (e.g., t2.micro)
-      KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
-      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
+      KeyName: !Ref KeyName # Replace with your actual key pair name
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', AMI] #ami-00385a401487aefa4 - Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPrivateSubnet
       SecurityGroupIds: 
         - !Ref FridayHITTPrivateEC2InstanceSecurityGroup
@@ -110,8 +126,8 @@ Resources:
     Type: AWS::EC2::Instance
     Properties:
       InstanceType: !Ref InstanceType #t2.micro Choose the instance type (e.g., t2.micro)
-      KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
-      ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
+      KeyName: !Ref KeyName # Replace with your actual key pair name
+      ImageId: !FindInMap [RegionMap, !Ref 'AWS::Region', AMI] #ami-00385a401487aefa4 - Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
       SecurityGroupIds: 
         - !Ref FridayHITTJumpBoxEC2InstanceSecurityGroup
