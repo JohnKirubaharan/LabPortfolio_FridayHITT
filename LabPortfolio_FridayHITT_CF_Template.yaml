@@ -1,10 +1,42 @@
 Description: Template to create an EC2 instance
 
+Parameters:
+  FridayHITTVPCCIDRRange:
+    Description: Defining the VPC IP Range for the FridayHITT Company
+    Type: String
+    Default: 10.0.0.0/16
+
+  PublicSubnetCIDRRange:
+    Description: Defining the IP range for the Public Subnet
+    Type: String
+    Default: 10.0.1.0/24
+
+  PrivateSubnetCIDRRange:
+    Description: Defining the IP range for the Private Subnet
+    Type: String
+    Default: 10.0.2.0/24
+
+  AvailabilityZone:
+    Description: Availability Zone for the subnets
+    Type: AWS::EC2::AvailabilityZone::Name
+    ConstraintDescription: Specify an available Availability Zone
+
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+      - t3.micro
+      - t3.small
+      - t3.medium
+
+##########################################################################################################################
 Resources:
   FridayHITTVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.0.0.0/16 #Need to change this IP Address
+      CidrBlock: !Ref FridayHITTVPCCIDRRange #10.0.0.0/16 - Example of how it can be provided
       EnableDnsSupport: true
       EnableDnsHostnames: true
 
@@ -27,8 +59,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref FridayHITTVPC
-      CidrBlock: 10.0.1.0/24 #Need to change this IP Address
-      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: !Ref PublicSubnetCIDRRange #10.0.1.0/24 - Example of how it can be provided
+      AvailabilityZone: !Ref AvailabilityZone #!Select [0, !GetAZs ''] - Direct way of providing the Availability Zone
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name #Enter your Key Name
@@ -39,8 +71,8 @@ Resources:
     Type: AWS::EC2::Subnet
     Properties:
       VpcId: !Ref FridayHITTVPC
-      CidrBlock: 10.0.2.0/24 #Need to change this IP Address
-      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: !Ref PrivateSubnetCIDRRange #10.0.2.0/24 - Example of how it can be provided
+      AvailabilityZone: !Ref AvailabilityZone #!Select [0, !GetAZs ''] - Direct way of providing the Availability Zone
       Tags:
         - Key: Name
           Value: PrivateSubnet
@@ -49,7 +81,7 @@ Resources:
   FridayHITTPublicEC2Instance:
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro
+      InstanceType: !Ref InstanceType #t2.micro - Example Value
       KeyName: StormHawker_FridayHITT # Replace with your actual key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
@@ -63,7 +95,7 @@ Resources:
   FridayHITTPrivateEC2Instance: #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
+      InstanceType: !Ref InstanceType #t2.micro Choose the instance type (e.g., t2.micro)
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPrivateSubnet
@@ -77,7 +109,7 @@ Resources:
   FridayHITTJumpBoxEC2Instance:    #Instance Name cannot contain Spaces or Special Characters. Only Alphanumeric
     Type: AWS::EC2::Instance
     Properties:
-      InstanceType: t2.micro # Choose the instance type (e.g., t2.micro)
+      InstanceType: !Ref InstanceType #t2.micro Choose the instance type (e.g., t2.micro)
       KeyName: StormHawker_FridayHITT # Replace with your EC2 key pair name
       ImageId: ami-00385a401487aefa4 # Replace with a valid AMI ID for your region
       SubnetId: !Ref FridayHITTPublicSubnet
